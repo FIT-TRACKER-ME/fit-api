@@ -31,3 +31,6 @@ substitutions:
   _REPOSITORY: fit-tracker-repo
   _SERVICE_NAME: fit-tracker-api
   _CLOUD_SQL_CONNECTION_NAME: fittrack-490711:us-central1:free-trial-first-project
+
+options:
+  logging: CLOUD_LOGGING_ONLY
