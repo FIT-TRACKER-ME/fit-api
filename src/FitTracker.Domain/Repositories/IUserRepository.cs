@@ -1,0 +1,38 @@
+using FitTracker.Domain.Entities.Users;
+using FitTracker.Domain.ValueObjects;
+
+namespace FitTracker.Domain.Repositories
+{
+    public interface IUserRepository
+    {
+        Task<User?> GetByDocumentAsync(Document document, CancellationToken cancellationToken = default);
+
+        Task<User?> GetByEmailAsync(Email email, CancellationToken cancellationToken = default);
+
+        Task<User?> GetByIdAsync(UserId userId, CancellationToken cancellationToken = default);
+
+        Task<bool> IsUserDocumentAlreadyExists(Document document, CancellationToken cancellationToken = default);
+
+        Task<bool> IsUserEmailAlreadyExists(Email email, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<User>> GetByRoleAsync(FitTracker.Domain.Enums.UserRole role, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<User>> GetStudentsByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken = default);
+
+        Task<User?> GetByRegistrationTokenAsync(string token, CancellationToken cancellationToken = default);
+
+        Task<int> CountByRoleAsync(FitTracker.Domain.Enums.UserRole role, CancellationToken cancellationToken = default);
+
+        Task<int> CountStudentsByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken = default);
+
+        Task<int> CountActiveAsync(CancellationToken cancellationToken = default);
+
+        Task<int> CountBlockedAsync(CancellationToken cancellationToken = default);
+
+        Task<int> CountAllAsync(CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default);
+
+        void Add(User user);
+    }
+}

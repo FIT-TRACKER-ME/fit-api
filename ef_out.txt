@@ -1,0 +1,4 @@
+Build started...
+Build succeeded.
+The Entity Framework tools version '7.0.5' is older than that of the runtime '8.0.6'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
+Unable to create a 'DbContext' of type ''. The exception 'The entity type 'UserId' requires a primary key to be defined. If you intended to use a keyless entity type, call 'HasNoKey' in 'OnModelCreating'. For more information on keyless entity types, see https://go.microsoft.com/fwlink/?linkid=2141943.' was thrown while attempting to create an instance. For the different patterns supported at design time, see https://go.microsoft.com/fwlink/?linkid=851728
