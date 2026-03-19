@@ -1,0 +1,33 @@
+steps:
+  # 1. Build da imagem Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$REPO_NAME:$SHORT_SHA', '.']
+
+  # 2. Push da imagem para o Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$REPO_NAME:$SHORT_SHA']
+
+  # 3. Deploy no Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$REPO_NAME:$SHORT_SHA'
+      - '--region'
+      - '$_REGION'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      # Configuração do Cloud SQL (Proxy)
+      - '--add-cloudsql-instances=$_CLOUD_SQL_CONNECTION_NAME'
+      # Injeção de segredos do Secret Manager
+      - '--set-secrets=ConnectionStrings__Database=FIT_TRACKER_DB_CONN:latest,Jwt__SecretKey=FIT_TRACKER_JWT_SECRET:latest'
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: fit-tracker-repo
+  _SERVICE_NAME: fit-tracker-api
+  _CLOUD_SQL_CONNECTION_NAME: fittrack-490711:us-central1:free-trial-first-project
