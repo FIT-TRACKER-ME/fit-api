@@ -2,7 +2,7 @@ namespace FitTracker.Domain.Entities.Workouts
 {
     public class Exercise
     {
-        public Exercise(Guid id, string name, string sets, string reps, string weight, string videoUrl, Guid workoutDayId)
+        public Exercise(Guid id, string name, string sets, string reps, string weight, string videoUrl, Guid workoutDayId, int restPeriod = 60)
         {
             Id = id;
             Name = name;
@@ -11,6 +11,7 @@ namespace FitTracker.Domain.Entities.Workouts
             Weight = weight;
             VideoUrl = videoUrl;
             WorkoutDayId = workoutDayId;
+            RestPeriod = restPeriod;
         }
 
         private Exercise() 
@@ -29,5 +30,6 @@ namespace FitTracker.Domain.Entities.Workouts
         public string Weight { get; private set; }
         public string VideoUrl { get; private set; }
         public Guid WorkoutDayId { get; private set; }
+        public int RestPeriod { get; private set; }
     }
 }

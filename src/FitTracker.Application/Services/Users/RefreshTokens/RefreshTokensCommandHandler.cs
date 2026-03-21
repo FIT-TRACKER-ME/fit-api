@@ -1,4 +1,4 @@
-﻿using FitTracker.Application.Abstractions;
+using FitTracker.Application.Abstractions;
 using FitTracker.Application.Abstractions.Messaging;
 using FitTracker.Domain.Entities.RefreshTokens;
 using FitTracker.Domain.Entities.Users;
@@ -51,6 +51,11 @@ namespace FitTracker.Application.Services.Users.RefreshTokens
             if (user is null)
             {
                 return Result.Failure<RefreshTokensResponse>(DomainErrors.User.NotFound);
+            }
+
+            if (!user.IsActive)
+            {
+                return Result.Failure<RefreshTokensResponse>(new Error("User.Blocked", "Your account has been blocked. Please contact support."));
             }
 
             // Rotação: Usar o token antigo e gerar um novo

@@ -6,6 +6,9 @@ using FitTracker.Application.Services.Workouts.Create;
 using FitTracker.Application.Services.Workouts.GetByStudent;
 using FitTracker.Application.Services.Workouts.GetByPersonal;
 using FitTracker.Application.Services.Workouts.Execute;
+using FitTracker.Application.Services.Workouts.Update;
+using FitTracker.Application.Services.Workouts.Delete;
+using FitTracker.Application.Services.Workouts.GetExpirationAlerts;
 using FitTracker.Domain.Shared;
 
 namespace FitTracker.Api.Controllers
@@ -16,6 +19,19 @@ namespace FitTracker.Api.Controllers
     {
         public WorkoutController(ISender sender) : base(sender)
         {
+        }
+
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var workout = await Sender.Send(new GetWorkoutByIdQuery(id), cancellationToken);
+
+            if (workout.IsFailure)
+            {
+                return HandleFailure(workout);
+            }
+
+            return Ok(workout.Value);
         }
 
         [HttpPost]
@@ -59,10 +75,10 @@ namespace FitTracker.Api.Controllers
             return Ok(result.Value);
         }
 
-        [HttpGet("personal/{personalId:guid}")]
-        public async Task<IActionResult> GetByPersonal(Guid personalId, CancellationToken cancellationToken)
+        [HttpGet("personal")]
+        public async Task<IActionResult> GetByPersonal(CancellationToken cancellationToken)
         {
-            var query = new GetPersonalWorkoutsQuery(personalId);
+            var query = new GetPersonalWorkoutsQuery();
 
             Result<List<WorkoutResponse>> result = await Sender.Send(query, cancellationToken);
 
@@ -72,6 +88,36 @@ namespace FitTracker.Api.Controllers
             }
 
             return Ok(result.Value);
+        }
+
+        [HttpGet("personal/expiration-alerts")]
+        public async Task<IActionResult> GetExpirationAlerts(CancellationToken cancellationToken)
+        {
+            var query = new GetWorkoutExpirationAlertsQuery();
+            var result = await Sender.Send(query, cancellationToken);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Personal")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateWorkoutCommand command, CancellationToken cancellationToken)
+        {
+            if (id != command.WorkoutId)
+            {
+                return BadRequest("ID mismatch");
+            }
+
+            var result = await Sender.Send(command, cancellationToken);
+            return result.IsSuccess ? NoContent() : HandleFailure(result);
+        }
+
+        [Authorize(Roles = "Personal")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        {
+            var command = new DeleteWorkoutCommand(id);
+            var result = await Sender.Send(command, cancellationToken);
+            return result.IsSuccess ? NoContent() : HandleFailure(result);
         }
     }
 }

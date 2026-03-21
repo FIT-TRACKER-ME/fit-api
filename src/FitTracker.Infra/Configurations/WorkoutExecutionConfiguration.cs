@@ -14,6 +14,10 @@ namespace FitTracker.Infra.Configurations
                 userId => userId.Value,
                 value => new FitTracker.Domain.Entities.Users.UserId(value));
 
+            builder.Property(x => x.Rating);
+            builder.Property(x => x.Feedback).HasMaxLength(1000);
+            builder.Property(x => x.CompletedAt).IsRequired();
+
             builder.ToTable("WorkoutExecutions");
         }
     }

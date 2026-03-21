@@ -12,12 +12,14 @@ namespace FitTracker.UnitTests.Application.Users
     public class GetUsersByRoleQueryHandlerTests
     {
         private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<FitTracker.Application.Abstractions.IUserContext> _userContextMock;
         private readonly GetUsersByRoleQueryHandler _handler;
 
         public GetUsersByRoleQueryHandlerTests()
         {
             _userRepositoryMock = new Mock<IUserRepository>();
-            _handler = new GetUsersByRoleQueryHandler(_userRepositoryMock.Object);
+            _userContextMock = new Mock<FitTracker.Application.Abstractions.IUserContext>();
+            _handler = new GetUsersByRoleQueryHandler(_userRepositoryMock.Object, _userContextMock.Object);
         }
 
         [Fact]

@@ -8,6 +8,7 @@ namespace FitTracker.Domain.Repositories
         Task<int> CountByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken);
         Task<List<WorkoutExecutionDetail>> GetRecentByPersonalIdAsync(UserId personalId, int limit, CancellationToken cancellationToken);
         void Add(WorkoutExecution execution);
+        void AddExerciseExecution(ExerciseExecution exerciseExecution);
     }
 
     public record WorkoutExecutionDetail(Guid Id, string StudentName, string WorkoutName, DateTime CompletedAt);

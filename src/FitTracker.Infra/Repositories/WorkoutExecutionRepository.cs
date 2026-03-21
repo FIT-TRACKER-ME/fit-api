@@ -55,5 +55,10 @@ namespace FitTracker.Infra.Repositories
         {
             _dbContext.WorkoutExecutions.Add(execution);
         }
+
+        public void AddExerciseExecution(ExerciseExecution exerciseExecution)
+        {
+            _dbContext.ExerciseExecutions.Add(exerciseExecution);
+        }
     }
 }

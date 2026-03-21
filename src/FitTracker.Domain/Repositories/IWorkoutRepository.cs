@@ -8,6 +8,7 @@ namespace FitTracker.Domain.Repositories
         Task<Workout?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
         Task<IEnumerable<Workout>> GetByStudentIdAsync(UserId studentId, CancellationToken cancellationToken);
         Task<IEnumerable<Workout>> GetByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken);
+        Task<IEnumerable<Workout>> GetExpirationAlertsAsync(UserId personalId, DateTime thresholdDate, CancellationToken cancellationToken);
         Task<int> CountByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken);
         Task<int> CountAllAsync(CancellationToken cancellationToken);
         void Add(Workout workout);

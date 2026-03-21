@@ -30,10 +30,27 @@ namespace FitTracker.Application.Services.Workouts.Execute
             var execution = new WorkoutExecution(
                 Guid.NewGuid(),
                 request.WorkoutId,
-                new UserId(userId)
+                new UserId(userId),
+                request.Rating,
+                request.Feedback
             );
 
             _workoutExecutionRepository.Add(execution);
+
+            if (request.ExerciseExecutions != null)
+            {
+                foreach (var exerciseReq in request.ExerciseExecutions)
+                {
+                    var exerciseExecution = new ExerciseExecution(
+                        Guid.NewGuid(),
+                        execution.Id,
+                        exerciseReq.ExerciseId,
+                        exerciseReq.WeightUsed,
+                        exerciseReq.RepsDone
+                    );
+                    _workoutExecutionRepository.AddExerciseExecution(exerciseExecution);
+                }
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

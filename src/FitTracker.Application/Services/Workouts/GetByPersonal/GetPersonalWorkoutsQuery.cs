@@ -3,5 +3,5 @@ using FitTracker.Application.Services.Workouts.GetByStudent;
 
 namespace FitTracker.Application.Services.Workouts.GetByPersonal
 {
-    public record GetPersonalWorkoutsQuery(Guid PersonalId) : IQuery<List<WorkoutResponse>>;
+    public record GetPersonalWorkoutsQuery() : IQuery<List<WorkoutResponse>>;
 }

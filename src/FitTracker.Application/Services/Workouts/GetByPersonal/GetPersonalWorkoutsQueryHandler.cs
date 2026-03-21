@@ -1,3 +1,4 @@
+using FitTracker.Application.Abstractions;
 using FitTracker.Application.Abstractions.Messaging;
 using FitTracker.Application.Services.Workouts.GetByStudent;
 using FitTracker.Domain.Entities.Users;
@@ -9,36 +10,19 @@ namespace FitTracker.Application.Services.Workouts.GetByPersonal
     internal sealed class GetPersonalWorkoutsQueryHandler : IQueryHandler<GetPersonalWorkoutsQuery, List<WorkoutResponse>>
     {
         private readonly IWorkoutRepository _workoutRepository;
+        private readonly IUserContext _userContext;
 
-        public GetPersonalWorkoutsQueryHandler(IWorkoutRepository workoutRepository)
+        public GetPersonalWorkoutsQueryHandler(IWorkoutRepository workoutRepository, IUserContext userContext)
         {
             _workoutRepository = workoutRepository;
+            _userContext = userContext;
         }
 
         public async Task<Result<List<WorkoutResponse>>> Handle(GetPersonalWorkoutsQuery request, CancellationToken cancellationToken)
         {
-            var workouts = await _workoutRepository.GetByPersonalIdAsync(new UserId(request.PersonalId), cancellationToken);
+            var workouts = await _workoutRepository.GetByPersonalIdAsync(new UserId(_userContext.UserId), cancellationToken);
 
-            var response = workouts.Select(w => new WorkoutResponse(
-                w.Id,
-                w.Name,
-                w.Description,
-                w.DurationWeeks,
-                w.FrequencyDaysPerWeek,
-                w.CreatedAt,
-                w.WorkoutDays.Select(wd => new WorkoutDayResponse(
-                    wd.Id,
-                    wd.Name,
-                    wd.Exercises.Select(e => new ExerciseResponse(
-                        e.Id,
-                        e.Name,
-                        e.Sets,
-                        e.Reps,
-                        e.Weight,
-                        e.VideoUrl
-                    )).ToList()
-                )).ToList()
-            )).ToList();
+            var response = workouts.Select(WorkoutResponse.FromDomain).ToList();
 
             return response;
         }

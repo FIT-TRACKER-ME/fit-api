@@ -14,7 +14,8 @@ namespace FitTracker.Infra.Configurations
             builder.Property(e => e.Sets).HasMaxLength(50);
             builder.Property(e => e.Reps).HasMaxLength(50);
             builder.Property(e => e.Weight).HasMaxLength(50);
-            builder.Property(e => e.VideoUrl).HasMaxLength(256);
+            builder.Property(e => e.VideoUrl).HasMaxLength(512);
+            builder.Property(e => e.RestPeriod).IsRequired().HasDefaultValue(60);
         }
     }
 }

@@ -22,6 +22,68 @@ namespace FitTracker.Infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FitTracker.Domain.Entities.Anamnesis.AnamnesisForm", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<Guid>("PersonalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SchemaJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AnamnesisForms", (string)null);
+                });
+
+            modelBuilder.Entity("FitTracker.Domain.Entities.Anamnesis.AnamnesisResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AnamnesisFormId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ResponsesJson")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnamnesisFormId");
+
+                    b.ToTable("AnamnesisResponses", (string)null);
+                });
+
             modelBuilder.Entity("FitTracker.Domain.Entities.RefreshTokens.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -62,6 +124,13 @@ namespace FitTracker.Infra.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AnamnesisFormId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<DateTime?>("BlockedAt")
                         .HasColumnType("timestamp with time zone");
@@ -149,6 +218,11 @@ namespace FitTracker.Infra.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<int>("RestPeriod")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(60);
+
                     b.Property<string>("Sets")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -156,8 +230,8 @@ namespace FitTracker.Infra.Migrations
 
                     b.Property<string>("VideoUrl")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<string>("Weight")
                         .IsRequired()
@@ -172,6 +246,40 @@ namespace FitTracker.Infra.Migrations
                     b.HasIndex("WorkoutDayId");
 
                     b.ToTable("Exercises");
+                });
+
+            modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.ExerciseExecution", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ExerciseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RepsDone")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("WeightUsed")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("WorkoutExecutionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("WorkoutExecutionId");
+
+                    b.ToTable("ExerciseExecutions", (string)null);
                 });
 
             modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.Workout", b =>
@@ -191,6 +299,9 @@ namespace FitTracker.Infra.Migrations
                     b.Property<int>("DurationWeeks")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("FrequencyDaysPerWeek")
                         .HasColumnType("integer");
 
@@ -206,6 +317,8 @@ namespace FitTracker.Infra.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Workouts");
                 });
@@ -240,6 +353,13 @@ namespace FitTracker.Infra.Migrations
                     b.Property<DateTime>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Feedback")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uuid");
 
@@ -251,6 +371,15 @@ namespace FitTracker.Infra.Migrations
                     b.ToTable("WorkoutExecutions", (string)null);
                 });
 
+            modelBuilder.Entity("FitTracker.Domain.Entities.Anamnesis.AnamnesisResponse", b =>
+                {
+                    b.HasOne("FitTracker.Domain.Entities.Anamnesis.AnamnesisForm", null)
+                        .WithMany()
+                        .HasForeignKey("AnamnesisFormId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.Exercise", b =>
                 {
                     b.HasOne("FitTracker.Domain.Entities.Workouts.WorkoutDay", null)
@@ -258,6 +387,32 @@ namespace FitTracker.Infra.Migrations
                         .HasForeignKey("WorkoutDayId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.ExerciseExecution", b =>
+                {
+                    b.HasOne("FitTracker.Domain.Entities.Workouts.Exercise", null)
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("FitTracker.Domain.Entities.Workouts.WorkoutExecution", null)
+                        .WithMany()
+                        .HasForeignKey("WorkoutExecutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.Workout", b =>
+                {
+                    b.HasOne("FitTracker.Domain.Entities.Users.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("FitTracker.Domain.Entities.Workouts.WorkoutDay", b =>

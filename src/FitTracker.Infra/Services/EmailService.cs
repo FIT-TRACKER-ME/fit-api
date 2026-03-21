@@ -84,15 +84,15 @@ namespace FitTracker.Infra.Services
                     secureSocketOptions = SecureSocketOptions.SslOnConnect;
                 }
 
-                await smtp.ConnectAsync(_emailOptions.SmtpServer, _emailOptions.SmtpPort, secureSocketOptions, cancellationToken);
+                //await smtp.ConnectAsync(_emailOptions.SmtpServer, _emailOptions.SmtpPort, secureSocketOptions, cancellationToken);
 
-                if (!string.IsNullOrEmpty(_emailOptions.SmtpUsername))
-                {
-                    await smtp.AuthenticateAsync(_emailOptions.SmtpUsername, _emailOptions.SmtpPassword, cancellationToken);
-                }
+                //if (!string.IsNullOrEmpty(_emailOptions.SmtpUsername))
+                //{
+                //    await smtp.AuthenticateAsync(_emailOptions.SmtpUsername, _emailOptions.SmtpPassword, cancellationToken);
+                //}
 
-                await smtp.SendAsync(email, cancellationToken);
-                await smtp.DisconnectAsync(true, cancellationToken);
+                //await smtp.SendAsync(email, cancellationToken);
+                //await smtp.DisconnectAsync(true, cancellationToken);
 
                 _logger.LogInformation("Email sent successfully to {To}", to);
             }

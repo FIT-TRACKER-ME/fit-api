@@ -41,7 +41,8 @@ namespace FitTracker.Domain.Entities.Users
         public string? RegistrationToken { get; private set; }
 
         public DateTime? TokenExpiresAt { get; private set; }
-
+        public string? AvatarUrl { get; private set; }
+        public Guid? AnamnesisFormId { get; private set; }
         public bool IsActive { get; private set; } = true;
 
         public DateTime? BlockedAt { get; private set; }
@@ -56,7 +57,7 @@ namespace FitTracker.Domain.Entities.Users
 
         public DateTime? DeletedAt { get; private set; }
 
-        public static User InviteStudent(Email email, string name, string phone, UserId createdBy)
+        public static User InviteStudent(Email email, string name, string phone, UserId createdBy, Guid? anamnesisFormId = null)
         {
             return new User(
                 new UserId(Guid.NewGuid()),
@@ -70,7 +71,8 @@ namespace FitTracker.Domain.Entities.Users
             {
                 RegistrationToken = Guid.NewGuid().ToString("N"),
                 TokenExpiresAt = DateTime.UtcNow.AddDays(7),
-                CreatedBy = createdBy
+                CreatedBy = createdBy,
+                AnamnesisFormId = anamnesisFormId
             };
         }
 
@@ -113,6 +115,11 @@ namespace FitTracker.Domain.Entities.Users
             IsActive = true;
             BlockedAt = null;
             BlockedBy = null;
+        }
+
+        public void CompleteAnamnesis()
+        {
+            AnamnesisFormId = null;
         }
     }
 }

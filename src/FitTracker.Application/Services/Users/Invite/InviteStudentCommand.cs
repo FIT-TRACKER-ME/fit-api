@@ -5,5 +5,6 @@ namespace FitTracker.Application.Services.Users.Invite
     public record InviteStudentCommand(
         string Email,
         string Name,
-        string Phone) : ICommand<InviteStudentResponse>;
+        string Phone,
+        Guid? AnamnesisFormId = null) : ICommand<InviteStudentResponse>;
 }

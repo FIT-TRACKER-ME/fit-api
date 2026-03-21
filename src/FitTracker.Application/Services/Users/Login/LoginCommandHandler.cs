@@ -1,4 +1,4 @@
-﻿using FitTracker.Application.Abstractions;
+using FitTracker.Application.Abstractions;
 using FitTracker.Application.Abstractions.Messaging;
 using FitTracker.Domain.Entities.RefreshTokens;
 using FitTracker.Domain.Entities.Users;
@@ -104,7 +104,8 @@ namespace FitTracker.Application.Services.Users.Login
                 user.Email.Value,
                 user.Phone,
                 (int)user.Role,
-                (int)user.Status);
+                (int)user.Status,
+                user.AnamnesisFormId?.ToString());
 
             var response = new LoginResponse(accessToken, refreshToken, userResponse);
 

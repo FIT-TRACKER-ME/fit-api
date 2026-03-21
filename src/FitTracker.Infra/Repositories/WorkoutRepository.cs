@@ -16,24 +16,39 @@ namespace FitTracker.Infra.Repositories
         public async Task<Workout?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
             await _dbContext
                 .Set<Workout>()
+                .Include(w => w.Student)
                 .Include(w => w.WorkoutDays)
                 .ThenInclude(wd => wd.Exercises)
                 .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
 
-        public async Task<IEnumerable<Workout>> GetByStudentIdAsync(UserId studentId, CancellationToken cancellationToken) =>
-            await _dbContext
+        public async Task<IEnumerable<Workout>> GetByStudentIdAsync(UserId studentId, CancellationToken cancellationToken)
+        {
+            return await _dbContext
                 .Set<Workout>()
-                .Where(w => w.StudentId == studentId)
-                .Include(w => w.WorkoutDays)
-                .ThenInclude(wd => wd.Exercises)
+                .Include(x => x.Student)
+                .Include(x => x.WorkoutDays)
+                    .ThenInclude(xd => xd.Exercises)
+                .Where(x => x.StudentId == studentId)
                 .ToListAsync(cancellationToken);
+        }
 
-        public async Task<IEnumerable<Workout>> GetByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken) =>
+        public async Task<IEnumerable<Workout>> GetByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken)
+        {
+            return await _dbContext
+                .Set<Workout>()
+                .Include(x => x.Student)
+                .Include(x => x.WorkoutDays)
+                    .ThenInclude(xd => xd.Exercises)
+                .Where(x => x.PersonalId == personalId)
+                .ToListAsync(cancellationToken);
+        }
+        public async Task<IEnumerable<Workout>> GetExpirationAlertsAsync(UserId personalId, DateTime thresholdDate, CancellationToken cancellationToken) =>
             await _dbContext
                 .Set<Workout>()
-                .Where(w => w.PersonalId == personalId)
-                .Include(w => w.WorkoutDays)
-                .ThenInclude(wd => wd.Exercises)
+                .Include(w => w.Student)
+                .Where(w => w.PersonalId == personalId && 
+                            w.ExpirationDate <= thresholdDate && 
+                            w.ExpirationDate >= DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
 
         public async Task<int> CountByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken) =>

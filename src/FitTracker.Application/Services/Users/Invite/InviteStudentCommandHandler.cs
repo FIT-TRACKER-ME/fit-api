@@ -39,7 +39,12 @@ namespace FitTracker.Application.Services.Users.Invite
                 return Result.Failure<InviteStudentResponse>(DomainErrors.User.EmailAlreadyExists);
             }
 
-            var user = User.InviteStudent(email.Value, request.Name, request.Phone, new UserId(_userContext.UserId));
+            var user = User.InviteStudent(
+                email.Value, 
+                request.Name, 
+                request.Phone, 
+                new UserId(_userContext.UserId),
+                request.AnamnesisFormId);
 
             _userRepository.Add(user);
 

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FitTracker.Api.Abstractions;
@@ -103,7 +103,7 @@ namespace FitTracker.Api.Controllers
         [HttpPost("invite-student")]
         public async Task<IActionResult> InviteStudent([FromBody] InviteStudentRequest request, CancellationToken cancellationToken)
         {
-            var command = new InviteStudentCommand(request.Email, request.Name, request.Phone);
+            var command = new InviteStudentCommand(request.Email, request.Name, request.Phone, request.AnamnesisFormId);
 
             Result<InviteStudentResponse> result = await Sender.Send(command, cancellationToken);
 

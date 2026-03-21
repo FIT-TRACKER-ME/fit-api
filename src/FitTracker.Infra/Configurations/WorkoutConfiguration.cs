@@ -13,6 +13,7 @@ namespace FitTracker.Infra.Configurations
 
             builder.Property(w => w.Name).HasMaxLength(128).IsRequired();
             builder.Property(w => w.Description).HasMaxLength(512);
+            builder.Property(w => w.ExpirationDate);
 
             builder.Property(w => w.StudentId).HasConversion(
                 id => id.Value,
@@ -21,6 +22,11 @@ namespace FitTracker.Infra.Configurations
             builder.Property(w => w.PersonalId).HasConversion(
                 id => id.Value,
                 value => new UserId(value));
+
+            builder.HasOne(w => w.Student)
+                .WithMany()
+                .HasForeignKey(w => w.StudentId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(w => w.WorkoutDays)
                 .WithOne()

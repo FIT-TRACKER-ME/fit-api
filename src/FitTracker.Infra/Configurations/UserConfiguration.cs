@@ -57,6 +57,13 @@ namespace FitTracker.Infra.Configurations
             builder.Property(c => c.DeletedAt)
                 .IsRequired(false);
 
+            builder.Property(c => c.AvatarUrl)
+                .HasMaxLength(512)
+                .IsRequired(false);
+
+            builder.Property(c => c.AnamnesisFormId)
+                .IsRequired(false);
+
             builder.HasQueryFilter(u => !u.IsDeleted);
 
             builder.HasIndex(c => c.Document).IsUnique().HasFilter("\"Document\" IS NOT NULL");

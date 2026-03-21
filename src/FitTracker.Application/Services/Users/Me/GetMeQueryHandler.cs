@@ -31,7 +31,7 @@ namespace FitTracker.Application.Services.Users.Me
                 return Result.Failure<UserResponse>(DomainErrors.User.NotFound);
             }
 
-            return new UserResponse(user.Name, user.Id.Value.ToString(), user.Document?.Value ?? "", user.Email.Value, user.Phone, (int)user.Role, (int)user.Status);
+            return new UserResponse(user.Name, user.Id.Value.ToString(), user.Document?.Value ?? "", user.Email.Value, user.Phone, (int)user.Role, (int)user.Status, user.AnamnesisFormId?.ToString());
         }
     }
 }
