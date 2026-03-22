@@ -168,6 +168,12 @@ app.UseCors(builder => builder
        .AllowAnyOrigin()
     );
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    await dbContext.Database.MigrateAsync();
+}
+
 app.Run();
 
 // Make the implicit Program class public for integration tests
