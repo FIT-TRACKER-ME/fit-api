@@ -23,8 +23,9 @@ steps:
       - '--allow-unauthenticated'
       # Configuração do Cloud SQL (Proxy)
       - '--add-cloudsql-instances=$_CLOUD_SQL_CONNECTION_NAME'
-      # Injeção de segredos do Secret Manager
+      # Injeção de segredos do Secret Manager e variáveis de ambiente
       - '--set-secrets=ConnectionStrings__Database=FIT_TRACKER_DB_CONN:latest,Jwt__SecretKey=FIT_TRACKER_JWT_SECRET:latest'
+      - '--set-env-vars=GCloudOptions__ProjectId=fittrack-490711,GCloudOptions__BucketName=fit-tracker-videos'
 
 substitutions:
   _REGION: us-central1

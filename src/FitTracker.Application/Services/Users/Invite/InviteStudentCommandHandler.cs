@@ -50,7 +50,7 @@ namespace FitTracker.Application.Services.Users.Invite
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _emailService.SendInvitationEmailAsync(user.Email.Value, user.Name, user.RegistrationToken!, cancellationToken);
+            // await _emailService.SendInvitationEmailAsync(user.Email.Value, user.Name, user.RegistrationToken!, cancellationToken);
 
             return new InviteStudentResponse(user.Id.Value, user.Email.Value, user.Name, user.RegistrationToken!);
         }

@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FitTracker.Api.Abstractions;
+using FitTracker.Application.Abstractions;
 using FitTracker.Application.Services.Workouts.Create;
 using FitTracker.Application.Services.Workouts.GetByStudent;
 using FitTracker.Application.Services.Workouts.GetByPersonal;
@@ -9,7 +10,9 @@ using FitTracker.Application.Services.Workouts.Execute;
 using FitTracker.Application.Services.Workouts.Update;
 using FitTracker.Application.Services.Workouts.Delete;
 using FitTracker.Application.Services.Workouts.GetExpirationAlerts;
+using FitTracker.Application.Services.Workouts.UploadVideo;
 using FitTracker.Domain.Shared;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace FitTracker.Api.Controllers
 {
@@ -50,7 +53,20 @@ namespace FitTracker.Api.Controllers
         [HttpPost("execute")]
         public async Task<IActionResult> Execute([FromBody] ExecuteWorkoutCommand command, CancellationToken cancellationToken)
         {
-            Result result = await Sender.Send(command, cancellationToken);
+            Result<Guid> result = await Sender.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return HandleFailure(result);
+            }
+
+            return Ok(result.Value);
+        }
+
+        [HttpPost("execute/feedback")]
+        public async Task<IActionResult> AddFeedback([FromBody] AddFeedbackCommand command, CancellationToken cancellationToken)
+        {
+            var result = await Sender.Send(command, cancellationToken);
 
             if (result.IsFailure)
             {
@@ -118,6 +134,35 @@ namespace FitTracker.Api.Controllers
             var command = new DeleteWorkoutCommand(id);
             var result = await Sender.Send(command, cancellationToken);
             return result.IsSuccess ? NoContent() : HandleFailure(result);
+        }
+
+        [Authorize(Roles = "Personal")]
+        [HttpPost("video-upload")]
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(MultipartBodyLengthLimit = 104857600, ValueLengthLimit = 104857600)]
+        public async Task<IActionResult> UploadVideo(IFormFile file, CancellationToken cancellationToken)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Arquivo não selecionado");
+            }
+
+            if (file.Length > 50 * 1024 * 1024)
+            {
+                return BadRequest("O arquivo é muito grande (máximo 50MB)");
+            }
+
+            using var stream = file.OpenReadStream();
+            var command = new UploadWorkoutVideoCommand(stream, file.FileName, file.ContentType);
+            
+            var result = await Sender.Send(command, cancellationToken);
+            
+            if (result.IsFailure)
+            {
+                return HandleFailure(result);
+            }
+
+            return Ok(result.Value);
         }
     }
 }

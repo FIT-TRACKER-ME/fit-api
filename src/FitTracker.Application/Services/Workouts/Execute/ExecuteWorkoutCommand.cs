@@ -6,7 +6,7 @@ namespace FitTracker.Application.Services.Workouts.Execute
         Guid WorkoutId, 
         int? Rating = null, 
         string? Feedback = null,
-        List<ExerciseExecutionRequest>? ExerciseExecutions = null) : ICommand;
+        List<ExerciseExecutionRequest>? ExerciseExecutions = null) : ICommand<Guid>;
 
     public sealed record ExerciseExecutionRequest(Guid ExerciseId, string WeightUsed, string RepsDone);
 }

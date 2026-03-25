@@ -7,6 +7,7 @@ namespace FitTracker.Domain.Repositories
     {
         Task<int> CountByPersonalIdAsync(UserId personalId, CancellationToken cancellationToken);
         Task<List<WorkoutExecutionDetail>> GetRecentByPersonalIdAsync(UserId personalId, int limit, CancellationToken cancellationToken);
+        Task<WorkoutExecution?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
         void Add(WorkoutExecution execution);
         void AddExerciseExecution(ExerciseExecution exerciseExecution);
     }

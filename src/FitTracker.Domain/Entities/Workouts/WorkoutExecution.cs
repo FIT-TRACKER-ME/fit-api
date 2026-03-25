@@ -25,5 +25,11 @@ namespace FitTracker.Domain.Entities.Workouts
         public DateTime CompletedAt { get; private set; }
         public int? Rating { get; private set; }
         public string? Feedback { get; private set; }
+
+        public void UpdateFeedback(int? rating, string? feedback)
+        {
+            Rating = rating;
+            Feedback = feedback;
+        }
     }
 }

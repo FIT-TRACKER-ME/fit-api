@@ -11,12 +11,18 @@ namespace FitTracker.Application.Services.Workouts.GetByStudent
         private readonly IWorkoutRepository _workoutRepository;
         private readonly IUserContext _userContext;
         private readonly IUserRepository _userRepository;
+        private readonly IBlobStorageService _blobStorageService;
 
-        public GetStudentWorkoutsQueryHandler(IWorkoutRepository workoutRepository, IUserContext userContext, IUserRepository userRepository)
+        public GetStudentWorkoutsQueryHandler(
+            IWorkoutRepository workoutRepository, 
+            IUserContext userContext, 
+            IUserRepository userRepository,
+            IBlobStorageService blobStorageService)
         {
             _workoutRepository = workoutRepository;
             _userContext = userContext;
             _userRepository = userRepository;
+            _blobStorageService = blobStorageService;
         }
 
         public async Task<Result<List<WorkoutResponse>>> Handle(GetStudentWorkoutsQuery request, CancellationToken cancellationToken)
@@ -39,9 +45,12 @@ namespace FitTracker.Application.Services.Workouts.GetByStudent
 
             var workouts = await _workoutRepository.GetByStudentIdAsync(new UserId(request.StudentId), cancellationToken);
 
-            var response = workouts.Select(WorkoutResponse.FromDomain).ToList();
+            var responseList = workouts.Select(WorkoutResponse.FromDomain).ToList();
+            
+            var signedTasks = responseList.Select(w => w.SignUrlsAsync(_blobStorageService));
+            var signedResponse = (await Task.WhenAll(signedTasks)).ToList();
 
-            return response;
+            return signedResponse;
         }
     }
 }

@@ -30,6 +30,16 @@ namespace FitTracker.Application.Services.Workouts.GetByStudent
                 workout.Student?.Name,
                 workout.ExpirationDate
             );
+
+        public async Task<WorkoutResponse> SignUrlsAsync(FitTracker.Application.Abstractions.IBlobStorageService storageService)
+        {
+            var signedDays = new List<WorkoutDayResponse>();
+            foreach (var day in WorkoutDays)
+            {
+                signedDays.Add(await day.SignUrlsAsync(storageService));
+            }
+            return this with { WorkoutDays = signedDays };
+        }
     }
 
     public record WorkoutDayResponse(Guid Id, string Name, List<ExerciseResponse> Exercises)
@@ -40,6 +50,16 @@ namespace FitTracker.Application.Services.Workouts.GetByStudent
                 day.Name,
                 day.Exercises.Select(ExerciseResponse.FromDomain).ToList()
             );
+
+        public async Task<WorkoutDayResponse> SignUrlsAsync(FitTracker.Application.Abstractions.IBlobStorageService storageService)
+        {
+            var signedExercises = new List<ExerciseResponse>();
+            foreach (var ex in Exercises)
+            {
+                signedExercises.Add(await ex.SignUrlsAsync(storageService));
+            }
+            return this with { Exercises = signedExercises };
+        }
     }
 
     public record ExerciseResponse(Guid Id, string Name, string Sets, string Reps, string Weight, string VideoUrl)
@@ -53,5 +73,12 @@ namespace FitTracker.Application.Services.Workouts.GetByStudent
                 exercise.Weight,
                 exercise.VideoUrl
             );
+
+        public async Task<ExerciseResponse> SignUrlsAsync(FitTracker.Application.Abstractions.IBlobStorageService storageService)
+        {
+            if (string.IsNullOrEmpty(VideoUrl)) return this;
+            var signedUrl = await storageService.GetDownloadUrlAsync(VideoUrl);
+            return this with { VideoUrl = signedUrl };
+        }
     }
 }

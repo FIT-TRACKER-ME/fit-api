@@ -1,5 +1,6 @@
 using FitTracker.Api.Options;
 using FitTracker.Infra.Options;
+using FitTracker.Domain.Shared;
 using FitTracker.Application.Behaviors;
 using FitTracker.Infra.Context;
 using FluentValidation;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Scrutor;
 using Serilog;
 using FitTracker.Api.Middleware;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,22 @@ builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
 builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection("EmailOptions"));
 
 builder.Services.AddControllers();
+builder.Services.Configure<GCloudOptions>(builder.Configuration.GetSection("GCloudOptions"));
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 104857600; // 100MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+    options.MemoryBufferThreshold = 104857600; // 100MB
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 104857600; // 100MB
+    options.Limits.MinRequestBodyDataRate = null;
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

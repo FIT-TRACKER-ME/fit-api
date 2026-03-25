@@ -51,6 +51,12 @@ namespace FitTracker.Infra.Repositories
             return executions;
         }
 
+        public async Task<WorkoutExecution?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await _dbContext.WorkoutExecutions
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
+
         public void Add(WorkoutExecution execution)
         {
             _dbContext.WorkoutExecutions.Add(execution);

@@ -7,7 +7,7 @@ using FitTracker.Domain.Shared;
 
 namespace FitTracker.Application.Services.Workouts.Execute
 {
-    internal sealed class ExecuteWorkoutCommandHandler : ICommandHandler<ExecuteWorkoutCommand>
+    internal sealed class ExecuteWorkoutCommandHandler : ICommandHandler<ExecuteWorkoutCommand, Guid>
     {
         private readonly IWorkoutExecutionRepository _workoutExecutionRepository;
         private readonly IUserContext _userContext;
@@ -23,7 +23,7 @@ namespace FitTracker.Application.Services.Workouts.Execute
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> Handle(ExecuteWorkoutCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(ExecuteWorkoutCommand request, CancellationToken cancellationToken)
         {
             var userId = _userContext.UserId;
 
@@ -54,7 +54,7 @@ namespace FitTracker.Application.Services.Workouts.Execute
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();
+            return Result.Success(execution.Id);
         }
     }
 }
