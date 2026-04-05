@@ -4,7 +4,7 @@ namespace FitTracker.Application.Services.Users.Login
     {
     }
 
-    public sealed record UserResponse(string Name, string Id, string Document, string Email, string Phone, int Role, int Status, string? AnamnesisFormId = null)
+    public sealed record UserResponse(string Name, string Id, string Document, string Email, string Phone, int Role, int Status, string? AnamnesisFormId = null, string? AvatarUrl = null)
     {
     }
 }

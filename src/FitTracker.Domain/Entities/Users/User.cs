@@ -121,5 +121,10 @@ namespace FitTracker.Domain.Entities.Users
         {
             AnamnesisFormId = null;
         }
+        
+        public void UpdateAvatarUrl(string avatarUrl)
+        {
+            AvatarUrl = avatarUrl;
+        }
     }
 }

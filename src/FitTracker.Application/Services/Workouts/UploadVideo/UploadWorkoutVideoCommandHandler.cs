@@ -18,8 +18,8 @@ namespace FitTracker.Application.Services.Workouts.UploadVideo
             var url = await _blobStorageService.UploadFileAsync(
                 request.FileStream, 
                 request.FileName, 
-                request.ContentType, 
-                cancellationToken);
+                request.ContentType,
+                cancellationToken: cancellationToken);
 
             return new UploadVideoResponse(url);
         }

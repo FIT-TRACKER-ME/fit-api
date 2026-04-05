@@ -9,25 +9,42 @@ namespace FitTracker.Infra.Services
 {
     public sealed class BlobStorageService : IBlobStorageService
     {
-        private readonly StorageClient _storageClient;
+        private StorageClient? _storageClient;
         private readonly GCloudOptions _gCloudOptions;
 
         public BlobStorageService(IOptions<GCloudOptions> gCloudOptions)
         {
             _gCloudOptions = gCloudOptions.Value;
-            _storageClient = StorageClient.Create();
+        }
+
+        private StorageClient GetClient()
+        {
+            if (_storageClient != null) return _storageClient;
+
+            try 
+            {
+                _storageClient = StorageClient.Create();
+                return _storageClient;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[BlobStorageService] WARNING: Could not create StorageClient. GCS functionality will be disabled. Error: {ex.Message}");
+                // In a real app, you might want to use a Null Object Pattern or rethrow depending on criticality
+                throw new InvalidOperationException("Google Cloud Storage is not configured.", ex);
+            }
         }
 
         public async Task<string> UploadFileAsync(
             Stream fileStream, 
             string fileName, 
             string contentType, 
+            string folder = "videos",
             CancellationToken cancellationToken = default)
         {
             var sanitizedName = fileName.Replace(" ", "_");
-            var objectName = $"videos/{Guid.NewGuid()}_{sanitizedName}";
+            var objectName = $"{folder}/{Guid.NewGuid()}_{sanitizedName}";
             
-            await _storageClient.UploadObjectAsync(
+            await GetClient().UploadObjectAsync(
                 _gCloudOptions.BucketName,
                 objectName,
                 contentType,
@@ -73,10 +90,14 @@ namespace FitTracker.Infra.Services
                     TimeSpan.FromHours(1),
                     cancellationToken: cancellationToken);
             }
+            catch (InvalidOperationException)
+            {
+                // Se o cliente não pôde ser criado (falta de config), fallback para a URL original
+                return videoUrl;
+            }
             catch (Exception ex)
             {
-                // If signing fails (e.g. no service account), fallback to public URL to avoid breaking the app
-                // but log this as it's a security/config issue
+                // If signing fails (e.g. no service account), fallback to public URL
                 Console.WriteLine($"[BlobStorageService] ERROR: Failed to sign URL for {objectName}. Reason: {ex.Message}");
                 return videoUrl;
             }
@@ -93,7 +114,7 @@ namespace FitTracker.Infra.Services
 
             var objectName = fileUrl.Substring(prefix.Length);
 
-            await _storageClient.DeleteObjectAsync(
+            await GetClient().DeleteObjectAsync(
                 _gCloudOptions.BucketName,
                 objectName,
                 cancellationToken: cancellationToken);

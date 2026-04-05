@@ -168,5 +168,27 @@ namespace FitTracker.Api.Controllers
 
             return Ok(new { message = "User unblocked successfully" });
         }
+
+        [Authorize]
+        [HttpPost("avatar")]
+        public async Task<IActionResult> UpdateAvatar(IFormFile file, CancellationToken cancellationToken)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+
+            using var stream = file.OpenReadStream();
+            var command = new UpdateAvatarCommand(stream, file.FileName, file.ContentType);
+
+            var result = await Sender.Send(command, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return HandleFailure(result);
+            }
+
+            return Ok(new { avatarUrl = result.Value });
+        }
     }
 }
